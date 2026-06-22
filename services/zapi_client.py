@@ -9,6 +9,8 @@ logger = setup_logger()
 
 
 def build_zapi_url():
+    """Monta a URL do endpoint de envio de texto da Z-API."""
+
     base_url = os.getenv("ZAPI_BASE_URL")
     instance_id = os.getenv("ZAPI_INSTANCE_ID")
     token = os.getenv("ZAPI_TOKEN")
@@ -17,10 +19,13 @@ def build_zapi_url():
 
 
 def send_text_message(phone, message):
+    """Envia uma mensagem de texto simples para um telefone via Z-API."""
+
     url = build_zapi_url()
     client_token = os.getenv("ZAPI_CLIENT_TOKEN")
 
     headers = {
+        # O Client-Token é enviado no header para autenticar a requisição.
         "Client-Token": client_token,
         "Content-Type": "application/json",
     }
@@ -37,9 +42,11 @@ def send_text_message(phone, message):
             url,
             json=payload,
             headers=headers,
+            # Define timeout para evitar que a aplicação fique travada indefinidamente.
             timeout=30,
         )
 
+        # Lança exceção caso a API retorne erro HTTP (4xx ou 5xx).
         response.raise_for_status()
 
         logger.info("Mensagem enviada com sucesso para %s.", phone)
