@@ -78,7 +78,7 @@ ZAPI_CLIENT_TOKEN=
 ### 1. Clonar o repositório
 
 ```bash
-git clone 
+git clone https://github.com/italomarcony/supabase-zapi-python-challenge.git
 cd supabase-zapi-python-challenge
 ```
 
