@@ -3,6 +3,7 @@ import sys
 
 from dotenv import load_dotenv
 
+from services.supabase_client import fetch_contacts
 from utils.logger import setup_logger
 
 
@@ -31,14 +32,31 @@ def main():
     missing_vars = validate_env_vars()
 
     if missing_vars:
-        logger.error(
-            "Variáveis de ambiente ausentes: %s",
-            ", ".join(missing_vars)
-        )
+        logger.error("Variáveis de ambiente ausentes: %s", ", ".join(missing_vars))
         sys.exit(1)
 
     logger.info("Variáveis de ambiente carregadas com sucesso.")
-    logger.info("Estrutura base validada. Pronto para integrar Supabase e Z-API.")
+
+    try:
+        contacts = fetch_contacts(limit=3) 
+
+        if not contacts:
+            logger.warning("Nenhum contato encontrado na tabela.")
+            return
+
+        logger.info("Contatos encontrados com sucesso:")
+
+        for index, contact in enumerate(contacts, start=1):
+            logger.info(
+                "%s. Nome: %s | Telefone: %s",
+                index,
+                contact.get("name"),
+                contact.get("phone"),
+            )
+
+    except Exception:
+        logger.error("Falha na execução do fluxo de leitura do Supabase.")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
